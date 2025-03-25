@@ -3,6 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import { Logger as Console } from "tslog";
 import crypto from "crypto";
 
+import { findUserByAuthorization } from "@/lib/prismaHelper";
+
 const console = new Console();
 const prisma = new PrismaClient();
 
@@ -24,7 +26,10 @@ export default async function handler(
   const timestamp = new Date().toISOString();
 
   try {
-    const user = await findUserByAuthorization(req.headers.authorization);
+    const user = await findUserByAuthorization(
+      prisma,
+      req.headers.authorization
+    );
 
     switch (req.method) {
       case "GET":
@@ -39,23 +44,21 @@ export default async function handler(
           });
 
           // Send Response
-          res.status(200).json({
+          return res.status(200).json({
             username: newUser.username!,
             bearer: newUser.bearer,
           });
-
-          return;
         } else {
           // Send Response
-          res.status(200).json({
+          return res.status(200).json({
             username: user.username,
             bearer: user.bearer,
           });
-          return;
         }
 
       default:
-        res.status(405).json({
+        // Send Response
+        return res.status(405).json({
           code: 405,
           message: "Method is allowed only for GET",
         });
@@ -67,23 +70,10 @@ export default async function handler(
       .update(`${timestamp}:${message}`)
       .digest("hex");
     console.error(hash, e);
-    res.status(405).json({
-      code: 405,
+    return res.status(500).json({
+      code: 500,
       message: message,
       hash: hash,
     });
   }
-}
-
-async function findUserByAuthorization(authorization: string | undefined) {
-  const authorizationSplit = authorization?.split(" ");
-  const User =
-    authorizationSplit &&
-    authorizationSplit.length == 2 &&
-    authorizationSplit[0] === "Bearer"
-      ? await prisma.user.findUnique({
-          where: { bearer: authorizationSplit[1] },
-        })
-      : null;
-  return User;
 }

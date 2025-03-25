@@ -12,8 +12,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Status>
 ) {
-  // console.info(req.headers);
-  // res.status(200).json({ name: "John Doe" });
   switch (req.method) {
     case "GET":
       console.info(req.headers);

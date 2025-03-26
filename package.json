@@ -2,6 +2,7 @@
   "name": "vpn-api",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -11,8 +12,10 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "next": "15.2.4",
+    "next-swagger-doc": "^0.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "swagger-ui-react": "^5.20.1",
     "tslog": "^4.9.3"
   },
   "devDependencies": {
@@ -21,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/swagger-ui-react": "^5.18.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "prisma": "^6.5.0",

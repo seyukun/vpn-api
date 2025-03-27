@@ -3,7 +3,6 @@ info:
   title: WG-VPM API
   description: |-
     This API registers and provides user connection infomation.
-  termsOfService: http://swagger.io/terms/
   contact:
     email: yushin-sato@kalytero.ne.jp
   license:

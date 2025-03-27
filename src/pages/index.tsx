@@ -1,25 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import ReactSwagger from "@/component/swaggerui";
 import GetApiDocsV01Beta from "@/lib/swagger-v0.1-beta";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export default function Home({
   spec,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <section className="bg-white">
+    // NOTE: overflow-hidden must not be deleted
+    <div className="bg-white m-0 p-0 overflow-hidden min-h-screen">
       <ReactSwagger spec={spec} />
-    </section>
+    </div>
   );
 }
 

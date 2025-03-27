@@ -9,13 +9,8 @@ export default async function GetApiDocsV01Beta() {
         title: "WG-VPM API",
         description:
           "This API registers and provides user connection infomation.",
-        termsOfService: "http://swagger.io/terms/",
         contact: {
           email: "yushin-sato@kalytero.ne.jp",
-        },
-        license: {
-          name: "BSD-4",
-          url: "https://github.com/kalytero/LICENSE-BSD4",
         },
         version: "0.0.1",
       },
@@ -34,6 +29,7 @@ export default async function GetApiDocsV01Beta() {
         "/user": {
           get: {
             summary: "Get current user info",
+            tags: ["user"],
             responses: {
               "200": {
                 description: "OK",
@@ -63,6 +59,7 @@ export default async function GetApiDocsV01Beta() {
           },
           put: {
             summary: "Update current user info",
+            tags: ["user"],
             requestBody: {
               content: {
                 "application/json": {
@@ -111,6 +108,7 @@ export default async function GetApiDocsV01Beta() {
         "/user/config": {
           get: {
             summary: "Get current user config",
+            tags: ["user"],
             responses: {
               "200": {
                 description: "OK",
@@ -181,6 +179,7 @@ export default async function GetApiDocsV01Beta() {
           },
           post: {
             summary: "Register current user config",
+            tags: ["user"],
             requestBody: {
               content: {
                 "application/json": {

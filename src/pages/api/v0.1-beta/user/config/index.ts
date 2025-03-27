@@ -51,7 +51,13 @@ export default async function handler(
           where: { userId: user.id },
         });
         const peers = await prisma.peer.findMany({
-          where: { userId: { not: user.id } },
+          where: {
+            userId: { not: user.id },
+            updatedAt: {
+              gt: new Date(Date.now() - 50 * 1000),
+              lt: new Date(Date.now() + 1 * 1000),
+            },
+          },
         });
 
         // Send Response
@@ -96,6 +102,12 @@ export default async function handler(
         }
 
         // Create Peer
+        const octets = [
+          (user.id / 255 / 255 / 255) % 255,
+          (user.id / 255 / 255) % 255,
+          (user.id / 255) % 255,
+          user.id % 255,
+        ];
         let mypeer = await prisma.peer.findFirst({
           where: { userId: user.id },
         });
@@ -105,7 +117,9 @@ export default async function handler(
                 data: {
                   publicKey: String(req.body["public_key"]),
                   endpoint: String(req.body["endpoint"]),
-                  allowedIps: `10.0.0.${user.id}/32`,
+                  allowedIps: JSON.stringify([
+                    `10.${octets[1]}.${octets[2]}.${octets[3]}/32`,
+                  ]),
                   persistentKeepaliveInterval: 25,
                   user: {
                     connect: {
@@ -121,7 +135,9 @@ export default async function handler(
                 data: {
                   publicKey: String(req.body["public_key"]),
                   endpoint: String(req.body["endpoint"]),
-                  allowedIps: `10.0.0.${user.id}/32`,
+                  allowedIps: JSON.stringify([
+                    `10.${octets[1]}.${octets[2]}.${octets[3]}/32`,
+                  ]),
                   persistentKeepaliveInterval: 25,
                 },
               });
@@ -136,12 +152,14 @@ export default async function handler(
           public_key: mypeer?.publicKey ?? "",
           endpoint: mypeer?.endpoint ?? "",
           peers: [
-            ...peers.map((peer) => ({
-              publick_key: peer.publicKey,
-              endpoint: peer.endpoint,
-              allowed_ips: [`10.0.0.${peer.userId}/32`],
-              persistent_keepalive: 20,
-            })),
+            ...peers.map((peer) => {
+              return {
+                publick_key: peer.publicKey,
+                endpoint: peer.endpoint,
+                allowed_ips: JSON.parse(peer.allowedIps),
+                persistent_keepalive: 20,
+              };
+            }),
           ],
         });
       }

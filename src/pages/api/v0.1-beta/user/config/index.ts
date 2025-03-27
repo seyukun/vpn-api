@@ -103,11 +103,12 @@ export default async function handler(
 
         // Create Peer
         const octets = [
-          (user.id / 255 / 255 / 255) % 255,
-          (user.id / 255 / 255) % 255,
+          (user.id / (255 * 255 * 255)) % 255,
+          (user.id / (255 * 255)) % 255,
           (user.id / 255) % 255,
           user.id % 255,
         ];
+        console.info(octets);
         let mypeer = await prisma.peer.findFirst({
           where: { userId: user.id },
         });
@@ -117,10 +118,9 @@ export default async function handler(
                 data: {
                   publicKey: String(req.body["public_key"]),
                   endpoint: String(req.body["endpoint"]),
-                  allowedIps: JSON.stringify([
-                    `10.${octets[1]}.${octets[2]}.${octets[3]}/32`,
-                  ]),
+                  allowedIps: `10.0.0.${octets[3]}/32`,
                   persistentKeepaliveInterval: 25,
+                  updatedAt: new Date(),
                   user: {
                     connect: {
                       id: user.id,
@@ -135,16 +135,21 @@ export default async function handler(
                 data: {
                   publicKey: String(req.body["public_key"]),
                   endpoint: String(req.body["endpoint"]),
-                  allowedIps: JSON.stringify([
-                    `10.${octets[1]}.${octets[2]}.${octets[3]}/32`,
-                  ]),
+                  allowedIps: `10.0.0.${octets[3]}/32`,
                   persistentKeepaliveInterval: 25,
+                  updatedAt: new Date(),
                 },
               });
 
         // Get Peers
         const peers = await prisma.peer.findMany({
-          where: { userId: { not: user.id } },
+          where: {
+            userId: { not: user.id },
+            updatedAt: {
+              gt: new Date(Date.now() - 39 * 1000),
+              lt: new Date(Date.now() + 1 * 1000),
+            },
+          },
         });
 
         // Send Response
@@ -156,7 +161,7 @@ export default async function handler(
               return {
                 publick_key: peer.publicKey,
                 endpoint: peer.endpoint,
-                allowed_ips: JSON.parse(peer.allowedIps),
+                allowed_ips: [peer.allowedIps],
                 persistent_keepalive: 20,
               };
             }),

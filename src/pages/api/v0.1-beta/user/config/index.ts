@@ -18,7 +18,7 @@ interface Config {
   public_key: string;
   endpoint: string;
   peers: Array<{
-    publick_key: string;
+    public_key: string;
     endpoint: string;
     allowed_ips: string[];
     persistent_keepalive: number;
@@ -66,7 +66,7 @@ export default async function handler(
           endpoint: mypeer?.endpoint ?? "",
           peers: [
             ...peers.map((peer) => ({
-              publick_key: peer.publicKey,
+              public_key: peer.publicKey,
               endpoint: peer.endpoint,
               allowed_ips: [`10.0.0.${peer.userId}/32`],
               persistent_keepalive: 20,
@@ -163,7 +163,7 @@ export default async function handler(
           peers: [
             ...peers.map((peer) => {
               return {
-                publick_key: peer.publicKey,
+                public_key: peer.publicKey,
                 endpoint: peer.endpoint,
                 allowed_ips: [peer.allowedIps],
                 persistent_keepalive: 20,

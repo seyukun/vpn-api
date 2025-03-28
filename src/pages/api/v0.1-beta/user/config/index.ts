@@ -102,13 +102,13 @@ export default async function handler(
         }
 
         // Create Peer
+        /* prettier-ignore */
         const octets = [
-          (user.id / (255 * 255 * 255)) % 255,
-          (user.id / (255 * 255)) % 255,
-          (user.id / 255) % 255,
-          user.id % 255,
+          ((val) => (val ? val % 255 : val))(Math.floor(user.id / (1 * 255 * 255 * 255))),
+          ((val) => (val ? val % 255 : val))(Math.floor(user.id / (1 * 255 * 255))),
+          ((val) => (val ? val % 255 : val))(Math.floor(user.id / (1 * 255))),
+          ((val) => (val ? val % 255 : val))(Math.floor(user.id / 1)),
         ];
-        console.info(octets);
         let mypeer = await prisma.peer.findFirst({
           where: { userId: user.id },
         });
@@ -118,7 +118,9 @@ export default async function handler(
                 data: {
                   publicKey: String(req.body["public_key"]),
                   endpoint: String(req.body["endpoint"]),
-                  allowedIps: `10.0.0.${octets[3]}/32`,
+                  allowedIps: `${10 + octets[0]}.${octets[1]}.${octets[2]}.${
+                    octets[3]
+                  }/32`,
                   persistentKeepaliveInterval: 25,
                   updatedAt: new Date(),
                   user: {
@@ -135,7 +137,9 @@ export default async function handler(
                 data: {
                   publicKey: String(req.body["public_key"]),
                   endpoint: String(req.body["endpoint"]),
-                  allowedIps: `10.0.0.${octets[3]}/32`,
+                  allowedIps: `${10 + octets[0]}.${octets[1]}.${octets[2]}.${
+                    octets[3]
+                  }/32`,
                   persistentKeepaliveInterval: 25,
                   updatedAt: new Date(),
                 },
